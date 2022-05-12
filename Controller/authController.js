@@ -4,7 +4,7 @@ const UserModel = require("../Model/UserModel");
 const MyEmailServer = require("../Util/MyEmailServer");
 const crypto = require("crypto");
 const VerificationModel = require("../Model/VerificationModel");
-const { jwtSignForUser } = require("../Util/jwtSignForUser");
+const { jwtSignForUser, verifyUserJwtToken } = require("../Util/jwtSignForUser");
 
 exports.loginPostController = async (req, res, next) => {
     try {
@@ -22,11 +22,11 @@ exports.loginPostController = async (req, res, next) => {
             }
         };
 
-        const userFoundWithUsername = await UserModel.findOne({ username: usernameOrEmail });
+        const userFoundWithUsername = await UserModel.findOne({ username: usernameOrEmail.toLowerCase() });
         if (userFoundWithUsername) {
             checkUserCredentials(userFoundWithUsername, password);
         } else {
-            const userFoundWithEmail = await UserModel.findOne({ email: usernameOrEmail });
+            const userFoundWithEmail = await UserModel.findOne({ email: usernameOrEmail.toLowerCase() });
             if (userFoundWithEmail) {
                 checkUserCredentials(userFoundWithEmail, password);
             } else res.json({ error: true, message: "User Doesn't Exist" });
@@ -45,7 +45,7 @@ exports.signupPostController = async (req, res, next) => {
             res.json({ error: true, ...dataError.mapped() });
         } else {
             const hashedPassword = await bcrypt.hash(password, 10);
-            const createdUser = await new UserModel({ username, password: hashedPassword, email }).save();
+            const createdUser = await new UserModel({ username: username.toLowerCase(), password: hashedPassword, email: email.toLowerCase() }).save();
             createdUser.password = undefined;
             const token = await jwtSignForUser(createdUser);
             res.json({ success: true, token: token, user: createdUser });
@@ -112,6 +112,19 @@ exports.isLoggedInController = async (req, res, next) => {
             const userData = UserModel.findById(req.session.user._id);
             res.json({ isLoggedIn: true, user: userData });
         }
+    } catch (e) {
+        next(e);
+    }
+};
+
+exports.refreshClientSession = async (req, res, next) => {
+    try {
+        const [token, userid] = [req.get("Authorization"), req.get("UserId")];
+        verifyUserJwtToken(`${token}`, userid)
+            .then((result) => res.json(result))
+            .catch((error) => {
+                next(error);
+            });
     } catch (e) {
         next(e);
     }

@@ -10,6 +10,7 @@ module.exports = class AuthValidator {
             .withMessage("username Cannot be empty")
             .matches(/^[a-zA-Z0-9]+$/)
             .withMessage("username only Letter and Number")
+            .toLowerCase()
             .custom(async (value, { req }) => {
                 const isUserFound = await UserModel.findOne({ username: value });
                 if (isUserFound) {
@@ -21,6 +22,7 @@ module.exports = class AuthValidator {
         body("email")
             .notEmpty()
             .withMessage("Email Cannot be Empty")
+            .normalizeEmail()
             .isEmail()
             .withMessage("email Must be valid")
             .custom(async (value, { req }) => {

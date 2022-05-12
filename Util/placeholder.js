@@ -6,5 +6,5 @@ exports.placeholderController = (req, res, next) => {
 exports.lateResponse = (req, res, next) => {
     setTimeout(() => {
         next();
-    }, 2000);
+    }, 4000);
 };

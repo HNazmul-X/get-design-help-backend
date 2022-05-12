@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const { mongoURI } = require("./config/mongoURI");
 const DefaultMiddleware = require("./Middleware/DefaultMiddleware");
+const errorRoute = require("./Router/errorRoute");
 const routeConnector = require("./Router/routeConnector");
 const PORT = process.env.PORT || 1080;
 
@@ -14,6 +15,9 @@ DefaultMiddleware(app);
 routeConnector(app);
 
 
+//@@@@ Connecting Router;
+errorRoute(app);
+
 //@@@ Connecting Mongoose;
 mongoose
     .connect(`${mongoURI}`)
@@ -23,8 +27,6 @@ mongoose
         ),
     );
 
-app.get("/", (req, res, next) => {
-    res.send(Buffer.from("Hey, Don't Worry I am working"));
-});
+
 
 app.listen(PORT);

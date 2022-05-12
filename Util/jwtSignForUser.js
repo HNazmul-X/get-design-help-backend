@@ -26,15 +26,15 @@ exports.jwtSignForUser = (user) => {
 };
 
 exports.verifyUserJwtToken = (token, userId) => {
-    return new Promise((resolve, reject) => {
-        jwt.verify(token, process.env.JWT_SECRET_KEY, async function (err, decoded) {
-            if (err) {
-                reject(err);
-            } else {
-                const userFound = await UserModel.findOne({ _id: decoded._id, email: decoded.email, username: decoded.username });
-                if (!userFound) reject(new Error("User doesn't found for this Token"));
-                else resolve({ success: true, message: "token is extreme",user:userFound });
-            }
-        });
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = jwt.verify(token, process.env.JWT_SECRET_KEY);
+            const userFound = await UserModel.findOne({ _id: data._id, email: data.email, username: data.username });
+            userFound.password = undefined;
+            if (!userFound) reject(new Error("User doesn't found for this Token"));
+            else resolve({ success: true, message: "token is extreme", user: userFound });
+        } catch (error) {
+            reject(error);
+        }
     });
 };
