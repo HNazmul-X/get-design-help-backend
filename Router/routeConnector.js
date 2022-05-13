@@ -1,4 +1,5 @@
 const authRouter = require("./authRouter");
+const resourceFile = require("./resourceFileRouter");
 
 const all_routes = [
     {
@@ -6,8 +7,8 @@ const all_routes = [
         handler: authRouter,
     },
     {
-        path: "/api/requested-file",
-        handler: () => null,
+        path: "/api/resource-file",
+        handler:resourceFile,
     },
     {
         path: "/",
