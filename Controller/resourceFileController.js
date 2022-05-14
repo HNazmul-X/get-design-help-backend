@@ -28,9 +28,21 @@ exports.sendResourceFileLinkRequest = async (req, res, next) => {
 exports.getResourceFileByUserId = async (req, res, next) => {
     try {
         const { userId } = req.params;
-        const resourceFiles = await ResourceFileModel.find({requestedBy:userId});
+        const resourceFiles = await ResourceFileModel.find({ requestedBy: userId }).populate("requestedBy", "username  email");
         res.json(resourceFiles);
     } catch (e) {
         next(e);
     }
 };
+exports.getAllResourceFile = async (req, res, next) => {
+    try {
+        const resourceFiles = await ResourceFileModel.find().populate("requestedBy", "username  email");
+        if(resourceFiles) return res.json(resourceFiles);
+        else throw new Error("no File exist",404)
+    } catch (e) {
+        next(e);
+    }
+};
+
+
+
