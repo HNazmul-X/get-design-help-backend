@@ -1,6 +1,8 @@
 const rootRouter = require("express").Router()
 
-rootRouter.get()
+rootRouter.get("/",(req,res,next) => {
+    res.send("hey, Don't worry I am working")
+})
 
 
 

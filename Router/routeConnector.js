@@ -1,5 +1,6 @@
 const authRouter = require("./authRouter");
 const resourceFile = require("./resourceFileRouter");
+const rootRouter = require("./rootRouter");
 
 const all_routes = [
     {
@@ -12,7 +13,7 @@ const all_routes = [
     },
     {
         path: "/",
-        handler: () => null,
+        handler: rootRouter,
     },
 ];
 

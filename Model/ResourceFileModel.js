@@ -7,6 +7,11 @@ const resourceFileSchema = new Schema(
             required: true,
             trim: true,
         },
+        uploadedFileLink: {
+            type: String,
+            trim: true,
+            default: "",
+        },
         email: {
             type: String,
             required: true,
@@ -45,7 +50,6 @@ const resourceFileSchema = new Schema(
     },
     { timestamps: true },
 );
-
 
 const ResourceFileModel = model("RequestFile", resourceFileSchema);
 module.exports = ResourceFileModel;

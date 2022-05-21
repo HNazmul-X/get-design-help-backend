@@ -47,6 +47,12 @@ const userSchema = new Schema(
                 ref: "RequestedFile",
             },
         ],
+        requestHistory: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "RequestHistory",
+            },
+        ],
         downloadedFile: [
             {
                 file: {

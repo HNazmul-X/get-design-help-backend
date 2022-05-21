@@ -8,3 +8,10 @@ exports.lateResponse = (req, res, next) => {
         next();
     }, 4000);
 };
+
+
+exports.throwError = (message) => {
+    throw new Error(message,422)
+}
+
+exports.downloaderWebsiteURL = `https://GDHDownloader.com/file`

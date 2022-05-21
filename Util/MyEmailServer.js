@@ -74,7 +74,7 @@ module.exports = class MyEmailServer {
                 subject,
                 from: '"Get Design Help" <nazmul@sarlex.org>',
             });
-
+            console.log("entering")
             server
                 .sendEmail()
                 .then((data) => resolve(data))
