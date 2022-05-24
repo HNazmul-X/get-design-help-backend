@@ -2,6 +2,7 @@ const RequestHistoryModel = require("../Model/RequestHistoryModel");
 const ResourceFileModel = require("../Model/ResourceFileModel");
 const UserModel = require("../Model/UserModel");
 const MyEmailServer = require("../Util/MyEmailServer");
+const { Schema } = require("mongoose");
 const { throwError, downloaderWebsiteURL } = require("../Util/placeholder");
 
 exports.createResourceFileNewRequest = async (req, res, next) => {
@@ -117,9 +118,21 @@ exports.deleteResourceFileById = async (req, res, next) => {
         );
 
         //Deleting File Data
-        await ResourceFileModel.findByIdAndDelete(fileId)
-        res.json({success:true,message:`${fileId} Deleted Successfully`})
-        
+        await ResourceFileModel.findByIdAndDelete(fileId);
+        res.json({ success: true, message: `${fileId} Deleted Successfully` });
+    } catch (e) {
+        next(e);
+    }
+};
+
+exports.getResourceFileDownloadLinkByFileId = async (req, res, next) => {
+    try {
+        const { fileId } = req.params;
+        if (!fileId) return res.json({ success: false, error: true, message: "Please Provide File Id" });
+        const fileInfo = await ResourceFileModel.findById(fileId).populate("requestedBy","username email");
+        if (!fileInfo) return res.json({ success: false, error: true, message: "Doesn't Exist any file", fileExist: false });
+        if (!fileInfo.uploadedFileLink) return res.json({ success: true, message: "File is Not Ready for Download", uploaded: false });
+        return res.json(fileInfo)
     } catch (e) {
         next(e);
     }
