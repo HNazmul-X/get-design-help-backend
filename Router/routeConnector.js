@@ -1,3 +1,4 @@
+const testRouter = require("../Playground/Playground");
 const authRouter = require("./authRouter");
 const resourceFile = require("./resourceFileRouter");
 const rootRouter = require("./rootRouter");
@@ -10,6 +11,10 @@ const all_routes = [
     {
         path: "/api/resource-file",
         handler:resourceFile,
+    },
+    {
+        path: "/api/playground",
+        handler:testRouter,
     },
     {
         path: "/",

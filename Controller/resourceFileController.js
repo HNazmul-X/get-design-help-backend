@@ -4,6 +4,7 @@ const UserModel = require("../Model/UserModel");
 const MyEmailServer = require("../Util/MyEmailServer");
 const { Schema } = require("mongoose");
 const { throwError, downloaderWebsiteURL } = require("../Util/placeholder");
+const { jsonFileToJS_Object } = require("../Util/fileReading");
 
 exports.createResourceFileNewRequest = async (req, res, next) => {
     try {
@@ -51,9 +52,12 @@ exports.getAllResourceFile = async (req, res, next) => {
         const fileQuantity = quantity || 12;
         const fileStatus = status || "pending";
 
+        const findQuery = { status: fileStatus };
+
         const totalDocument = await ResourceFileModel.countDocuments();
-        const resourceFiles = await ResourceFileModel.find({ status: fileStatus })
+        const resourceFiles = await ResourceFileModel.find(findQuery)
             .skip(pageNo * fileQuantity - fileQuantity)
+            .sort({createdAt:"-1"})
             .limit(parseInt(fileQuantity))
             .populate("requestedBy", "username  email");
         if (resourceFiles)
@@ -74,6 +78,7 @@ exports.updateResourceFileWithUploadedLink = async (req, res, next) => {
     try {
         const { uploadedFileLink } = req.body;
         const fileId = req.params?.fileId;
+        const clientConfig = await jsonFileToJS_Object(process.cwd() + "/config/json/clientConfig.json");
 
         // checking validation
         if (!fileId || !uploadedFileLink) return res.json({ success: false, message: "Please Provide Valid Information" });
@@ -88,12 +93,13 @@ exports.updateResourceFileWithUploadedLink = async (req, res, next) => {
                 },
                 { new: true },
             );
-            console.log(updatedFile);
+            console.log(`${clientConfig.fileDownloadURL}/${updatedFile._id}`);
             const sentEmailData = await MyEmailServer.emailSentWithNazmul_Sarlex_org({
                 to: updatedFile.email,
                 subject: "You file is Ready to Download",
-                html: `<h1>Here is your file Link : ${updatedFile?.uploadedFileLink} </h1>`,
+                html: `<h1>Here is your file Link : <a href="${clientConfig.fileDownloadURL}/${updatedFile._id}">Click Here To Download</a> </h1>`,
             });
+            console.log(sentEmailData);
             res.json({ sentEmailData, updatedFile });
         }
     } catch (e) {
@@ -129,10 +135,10 @@ exports.getResourceFileDownloadLinkByFileId = async (req, res, next) => {
     try {
         const { fileId } = req.params;
         if (!fileId) return res.json({ success: false, error: true, message: "Please Provide File Id" });
-        const fileInfo = await ResourceFileModel.findById(fileId).populate("requestedBy","username email");
+        const fileInfo = await ResourceFileModel.findById(fileId).populate("requestedBy", "username email");
         if (!fileInfo) return res.json({ success: false, error: true, message: "Doesn't Exist any file", fileExist: false });
         if (!fileInfo.uploadedFileLink) return res.json({ success: true, message: "File is Not Ready for Download", uploaded: false });
-        return res.json(fileInfo)
+        return res.json(fileInfo);
     } catch (e) {
         next(e);
     }
