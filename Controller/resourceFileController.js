@@ -57,9 +57,9 @@ exports.getAllResourceFile = async (req, res, next) => {
         const totalDocument = await ResourceFileModel.countDocuments();
         const resourceFiles = await ResourceFileModel.find(findQuery)
             .skip(pageNo * fileQuantity - fileQuantity)
-            .sort({createdAt:"-1"})
             .limit(parseInt(fileQuantity))
-            .populate("requestedBy", "username  email");
+            .populate("requestedBy", "username  email")
+            .sort({ createdAt: -1 });
         if (resourceFiles)
             return res.json({
                 files: resourceFiles,

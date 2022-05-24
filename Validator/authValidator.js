@@ -22,7 +22,6 @@ module.exports = class AuthValidator {
         body("email")
             .notEmpty()
             .withMessage("Email Cannot be Empty")
-            .normalizeEmail()
             .isEmail()
             .withMessage("email Must be valid")
             .custom(async (value, { req }) => {
