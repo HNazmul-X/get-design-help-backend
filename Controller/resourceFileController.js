@@ -46,7 +46,7 @@ exports.getResourceFileByUserId = async (req, res, next) => {
 };
 exports.getAllResourceFile = async (req, res, next) => {
     try {
-        const { page, quantity, status } = req.query;
+        const { page, quantity,afterDay, status } = req.query;
         console.log(req.query);
         const pageNo = page || 1;
         const fileQuantity = quantity || 12;
